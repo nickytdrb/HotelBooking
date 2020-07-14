@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.11.2/css/all.css">
+  <title>Assignment 5</title>
+  <style>
+    .entry {
+      border: 2px solid gray;
+      padding: 10px;
+      margin: 10px;
+      box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    img {
+      width: 200px;
+      height: 200px;
+    }
+
+    input[type="search"] {
+      font-family: 'Calibri';
+    }
+
+    .modal {
+      display: none;
+      
+      position: fixed;
+      
+      z-index: 1;
+      
+      padding-top: 100px;
+      
+      left: 0;
+      top: 0;
+      width: 100%;
+      
+      height: 100%;
+      
+      overflow: auto;
+      
+      background-color: rgb(0, 0, 0);
+      
+      background-color: rgba(0, 0, 0, 0.4);
+      
+    }
+
+
+    .modal-content {
+      background-color: #fefefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+    }
+
+    .close {
+      color: #aaaaaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #cardbox:hover {
+    background-color: #e9e9e9; 
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="jumbotron">
+    <div class="container">
+      <div class="row">
+
+        <div class="col-md-9">
+          <div class="form-group">
+            <input type="text" id="search" class="fa fa-search glyphicon glyphicon-search form-control form-control-lg"
+              placeholder="&#xf002 Enter city">
+          </div>
+          <div id="match-list">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <button type="button" id="buttonSrch" class="btn btn-primary">Search</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div class="row mx-md-n5">
+        <div class="col-md-4">
+          <div class="p-3 border bg-light" style="height:95px">
+            <label for="checkin">Check-in:</label>
+            <input type="date" id="checkin" name="checkin"> </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border bg-light" style="height:95px">
+            <label for="checkout">Check-out:</label>
+            <input type="date" id="checkout" name="checkout">
+          </div>
+        </div>
+
+        <div class="col-md-4">
+          <div class="p-3 border bg-light" style="height:95px">
+            Type of room:
+            <select id="roomtypes" name="roomtypes">
+              <option value="singleroom">Single</option>
+              <option value="familyroom">Family room</option>
+              <option value="doubleroom">Double</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <div class="row mx-md-n5">
+          <div class="col-md-3 p-3 border bg-light">
+            <label for="price">Price: <span id="selected_price">1050</span></label>
+            <input type="range" id="price" min="700" max="1501" />
+          </div>
+          <div class="col-md-3 p-3 border bg-light">
+            Property type:
+            <br>
+            <select id="rating" name="rating">
+              <option value="none" selected disabled hidden>Select number of stars:</option>
+              <option value="0">0 stars</option>
+              <option value="1">1 star</option>
+              <option value="2">2 stars</option>
+              <option value="3">3 stars</option>
+              <option value="4">4 stars</option>
+              <option value="5">5 stars</option>
+            </select>
+          </div>
+          <div class="col-md-3 p-3 border bg-light">
+            Guest rating:
+            <br>
+            <select id="guestR" name="guestR" class="example">
+              <option value="none" selected disabled hidden>
+                Select rating
+              </option>
+              <option value="0" data-value="2"> 0-2 Okay </option>
+              <option value="2" data-value="6"> 2-6 Fair </option>
+              <option value="6" data-value="7"> 6-7 Good </option>
+              <option value="7" data-value="8.5"> 7.5-8 Very Good </option>
+              <option value="8.5" data-value="10"> 8.5-10 Excellent </option>
+            </select>
+          </div>
+          <div class="col-md-3 p-3 border bg-light">
+            Hotel location:
+            <br>
+            <select id="location" name="location">
+              <option value="none" selected disabled hidden>
+                Location
+              </option>
+              <option value="Marseille"> Marseille </option>
+              <option value="Toulouz"> Toulouse </option>
+              <option value="Paris"> Paris </option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+    
+
+    <div class="container">
+      <div class="row mx-md-n5 p-3 border bg-light">
+        <div class="col-md-3">
+          <button id="modalButton" type="button" class="btn btn-info" data-toggle="modal"
+              data-target="#modalGM">View map</button>
+
+            <div id="myModal" class="modal">
+              
+              <div class="modal-content">
+                <span class="close">&times;</span>
+                  
+                  <p id="mapFrames"></p>
+              </div>
+            </div>      
+        </div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3"></div>
+        <div class="col-md-3"> Sort by:
+          <select id="filterHotel" name="filterHotel">
+          </select>
+        </div>
+      </div>
+    </div>
+
+  <div id="entries"></div>
+  <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+    integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+  
+  <script>
+
+    
+    function initApp(entries) {
+      console.log(entries);
+      const entriesEl = document.querySelector("#entries");
+      const priceSlider = document.querySelector("#price");
+      const selPrice = document.querySelector("#selected_price");
+      const buttonSearch = document.querySelector("#buttonSrch");
+      const search = document.getElementById('search');
+      const cardList = document.getElementById('cardbox');
+      const matchList = document.getElementById('match-list');
+      const stars = document.getElementById('rating');
+      const guestStars = document.getElementById('guestR');
+      const hotelLocation = document.getElementById('location');
+      const modalFrame = document.querySelector("#mapFrames");
+      const modalBut = document.getElementById('modalButton');
+      const filtersHotel = document.querySelector("#filterHotel");
+      const arr=[];
+
+      entries.map(function (entry) {
+        entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${entry.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+                  <p><b>Hotel Name: ${entry.hotelName}</b></p>
+                  <p>Rating: ${entry.rating} stars</p>
+							    <p>City: ${entry.city}</p>
+							    <p>Price &euro;: ${entry.price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+					`;
+      });
+
+      entries.map(function (entry) {
+        
+        for (i=0; i<entry.filters.length; i++) {
+              arr[i] = entry.filters[i].name;
+        } 
+          
+        for(i=0; i<arr.length; i++){
+          const html = arr.map(ari =>
+            `
+            <option value="none" selected disabled hidden>
+                 Choose filter
+               </option>
+            <option>${ari}</option>
+          `).join('');
+          filtersHotel.innerHTML = html;
+        }
+        
+
+        option = document.getElementById("filterHotel");
+        console.log(option.value);
+        option.onchange = function() {
+            console.log("YOU CLICKED ME!");
+            const filtered = entries.filter(function (entry) {
+              for( i=0; i<entry.filters.length; i++){
+                if(entry.filters[i].name == option.value){
+                  return entry;
+                }
+              }
+            });
+            console.log(filtered);
+            entriesEl.innerHTML = ""; // Empty the container first
+            filtered.map(function (entry) {
+            entriesEl.innerHTML += `
+            <div class="entry">
+              <div class="container">
+              <div class="row">
+                <div class="col-md-4"> 
+                <img src="${entry.thumbnail}"/>
+                </div>
+                  <div class="col-md-8">
+                    <p>Hotel Name: ${entry.hotelName}</p>
+                    <p>City: ${entry.city}</p>
+                    <p>Price &euro;: ${entry.price}</p>
+                    <p>Rating: ${entry.rating} stars</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+              `;
+          });
+        }
+
+
+      });
+      
+      priceSlider.addEventListener("change", function () {
+        console.log("Changed?", priceSlider.value);
+        selPrice.innerText = priceSlider.value;
+        const filtered = entries.filter(function (entry) {
+          return entry.price <= priceSlider.value;
+        });
+        console.log(filtered);
+        entriesEl.innerHTML = ""; 
+        filtered.map(function (entry) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+                  <div class="col-md-4"> 
+                  <img src="${entry.thumbnail}"/>
+                  </div>
+                  <div class="col-md-8">
+                  <p><b>Hotel Name: ${entry.hotelName}</b></p>
+                  <p>Rating: ${entry.rating} stars</p>
+							    <p>City: ${entry.city}</p>
+							    <p>Price &euro;: ${entry.price}</p>
+                  </div>
+              </div>
+            </div>
+          </div>
+						`;
+        });
+      });
+
+
+      stars.addEventListener("change", function () {
+        const filtered = entries.filter(function (entry) {
+          return entry.rating == stars.value;
+        });
+        console.log(filtered);
+        entriesEl.innerHTML = ""; 
+        filtered.map(function (entry) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${entry.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+                  <p><b>Hotel Name: ${entry.hotelName}</b></p>
+                  <p>Rating: ${entry.rating} stars</p>
+							    <p>City: ${entry.city}</p>
+							    <p>Price &euro;: ${entry.price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+        });
+      });
+
+
+
+      guestStars.addEventListener("change", function () {
+        var other_val = $('select.example option[value="' + $(this).val() + '"]').data('value');
+        const filtered = entries.filter(function (entry) {
+          const data = entry.ratings.no;
+          return data >= guestStars.value && data<other_val;
+        });
+        console.log(filtered);
+        entriesEl.innerHTML = ""; 
+        filtered.map(function (entry) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${entry.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+							    <p><b>Hotel Name: ${entry.hotelName}</b></p>
+							    <p>City: ${entry.city}</p>
+                  <p>Price &euro;: ${entry.price}</p>
+                  <p>Rating: ${entry.rating} stars</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+        });
+      });
+
+
+      hotelLocation.addEventListener("change", function () {
+        const filtered = entries.filter(function (entry) {
+          return entry.city == hotelLocation.value;
+        });
+        console.log(filtered);
+        entriesEl.innerHTML = ""; // Empty the container first
+        filtered.map(function (entry) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${entry.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+                  <p><b>Hotel Name: ${entry.hotelName}</b></p>
+                  <p>Rating: ${entry.rating} stars</p>
+							    <p>City: ${entry.city}</p>
+							    <p>Price &euro;: ${entry.price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+        });
+      });
+
+      modalBut.addEventListener("click", function () {
+        var modal = document.getElementById("myModal");
+        modal.style.display = "block";
+        entriesEl.innerHTML = ""; // Empty the container first
+        entries.map(function (entry) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${entry.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+							    <p>Hotel Name: ${entry.hotelName}</p>
+							    <p>City: ${entry.city}</p>
+                  <p>Price &euro;: ${entry.price}</p>
+                  <p>Rating: ${entry.rating} stars</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+        });
+        var span = document.getElementsByClassName("close")[0];
+        span.onclick = function() {
+          modal.style.display = "none";
+        }
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+          }
+        }
+
+        const html = entries.map(entry =>
+          `
+          <h3>${entry.city}</h3>
+          <iframe src="${entry.mapurl}" frameborder="0" style="width:300px; height:300px;"
+                    style="border:1" allowfullscreen>
+          </iframe>
+          
+        `).join('');
+        mapFrames.innerHTML = html;
+      });
+
+
+      //event listener for the search button
+      buttonSearch.addEventListener("click", () => searchCities2(search.value));
+
+      const searchCities2 = async searchText => {
+        const res = await fetch('./entries.json');
+        const entries = await res.json();
+
+        let matches = entries.filter(entry => {
+          const regex = new RegExp(`^${searchText}`, 'gi');
+          return entry.city.match(regex);
+        });
+
+        if (searchText.length == 0) {
+          matches = entries;
+          matchList.innerHTML = '';
+          search.innerHTML = '';
+        }
+        console.log(matches);
+        outputHtml2(matches);
+      };
+
+      const outputHtml2 = matches => {
+        if (matches.length > 0) {
+          entriesEl.innerHTML = ""; // Empty the container first
+          matchList.innerHTML = "";
+          search.innerHTML = "";
+          matches.map(function (match) {
+            entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${match.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+                  <p><b>Hotel Name: ${match.hotelName}</b></p>
+                  <p>Rating: ${match.rating} stars</p>
+							    <p>City: ${match.city}</p>
+							    <p>Price &euro;: ${match.price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+          });
+        } else if (matches.length == 0) {
+          matchList.innerHTML = '';
+          search.innerHTML = '';
+        }
+      }
+
+      //event listener for input text on search bar
+      search.addEventListener('input', () => searchCities(search.value));
+
+      search.addEventListener("keyup", function(event) {
+             event.preventDefault();
+            if (event.keyCode === 13) {
+                document.getElementById("buttonSrch").click();
+            }
+      });
+
+      const searchCities = async searchText => {
+        const res = await fetch('./entries.json');
+        const entries = await res.json();
+
+        let matches = entries.filter(entry => {
+          const regex = new RegExp(`^${searchText}`, 'gi');
+          return entry.city.match(regex);
+        });
+
+        if (searchText.length == 0) {
+          matches = entries;
+          matchList.innerHTML = '';
+          search.innerHTML = '';
+          console.log(matches);
+          outputHtml(matches);
+        }else if(searchText.length > 0){
+            matchList.innerHTML ="";
+            const html = matches.map(match => `
+            <div id="cardbox" class="card card-body mb-1">
+              <img style="width:50px; height:50px;" src="${match.thumbnail}"> 
+              <h4>${match.city}</h4>
+              <h6>${match.hotelName}</h6>
+            </div>
+            </div>
+            `)
+            .join('');
+            matchList.innerHTML = html;  
+        }
+
+        var cardBoxer = document.getElementById('match-list');
+        cardBoxer.onclick = function(){
+          outputHtml(matches);
+        }
+          
+      };
+
+      const outputHtml = matches => {
+        if (matches.length > 0) {
+          console.log(matches);
+          entriesEl.innerHTML = ""; // Empty the container first
+          matchList.innerHTML = "";
+          search.innerHTML = "";
+          matches.map(function (match) {
+          entriesEl.innerHTML += `
+          <div class="entry">
+            <div class="container">
+             <div class="row">
+              <div class="col-md-4"> 
+               <img src="${match.thumbnail}"/>
+              </div>
+                <div class="col-md-8">
+							    <p><b>Hotel Name: ${match.hotelName}</b></p>
+                  <p>Rating: ${match.rating} stars</p>
+							    <p>City: ${match.city}</p>
+							    <p>Price &euro;: ${match.price}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+						`;
+          });
+        } 
+      }
+
+
+    }
+
+
+    //fetch the json file  
+    fetch("entries.json")
+    .then(function (response) {
+      return response.json();
+    })
+    .then(initApp)
+    .catch(function (error) {
+      console.log("Error:", error.message);
+    });
+
+
+  </script>
+
+</body>
+
+</html>
